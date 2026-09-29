@@ -33,8 +33,4 @@ Proyecto ASP.NET Core MVC funcional con Docker Compose (app + SQL Server 2022). 
 dentro de `Codigo_Fuente/SistemaGestionPedidos/` para los pasos exactos de despliegue
 (`docker-compose up --build`).
 
-## Pendiente de parte del equipo
 
-- Subir el código a un repositorio Git público con **TAG** y **Release**.
-- Probar `docker-compose up --build` en su máquina antes de la sustentación.
-- La presentación en PowerPoint se entrega como archivo aparte.
