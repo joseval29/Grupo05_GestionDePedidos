@@ -1,0 +1,13 @@
+body {
+    min-height: 100vh;
+}
+
+.card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.badge-estado-Pendiente { background-color: #ffc107; color: #212529; }
+.badge-estado-Confirmado { background-color: #0d6efd; }
+.badge-estado-Enviado { background-color: #6f42c1; }
+.badge-estado-Entregado { background-color: #198754; }
+.badge-estado-Cancelado { background-color: #dc3545; }

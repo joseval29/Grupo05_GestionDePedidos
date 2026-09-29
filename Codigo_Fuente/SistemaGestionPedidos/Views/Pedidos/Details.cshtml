@@ -1,0 +1,64 @@
+@model Pedido
+@{
+    ViewData["Title"] = $"Pedido #{Model.Id}";
+}
+
+<h1>Pedido #@Model.Id</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Cliente</dt>
+    <dd class="col-sm-9">@Model.Cliente?.Nombre (@Model.Cliente?.Email)</dd>
+
+    <dt class="col-sm-3">Fecha</dt>
+    <dd class="col-sm-9">@Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</dd>
+
+    <dt class="col-sm-3">Estado</dt>
+    <dd class="col-sm-9"><span class="badge badge-estado-@Model.Estado">@Model.Estado</span></dd>
+
+    <dt class="col-sm-3">Total</dt>
+    <dd class="col-sm-9 fw-bold">@Model.Total.ToString("C")</dd>
+</dl>
+
+<h5 class="mt-4">Productos</h5>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var d in Model.DetallePedidos)
+    {
+        <tr>
+            <td>@d.Producto?.Nombre</td>
+            <td>@d.Cantidad</td>
+            <td>@d.PrecioUnitario.ToString("C")</td>
+            <td>@d.Subtotal.ToString("C")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h5 class="mt-4">Cambiar estado</h5>
+<form asp-action="CambiarEstado" method="post" class="d-flex gap-2 col-md-6">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <select name="nuevoEstado" class="form-select">
+        @foreach (var estado in Enum.GetValues<EstadoPedido>())
+        {
+            if (estado == Model.Estado)
+            {
+                <option value="@estado" selected>@estado</option>
+            }
+            else
+            {
+                <option value="@estado">@estado</option>
+            }
+        }
+    </select>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+</form>
+
+<a asp-action="Index" class="btn btn-outline-secondary mt-4">Volver a la lista</a>

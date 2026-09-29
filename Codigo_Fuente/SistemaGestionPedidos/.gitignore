@@ -1,0 +1,14 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+
+## Logs
+*.log
+
+## OS
+.DS_Store
+Thumbs.db

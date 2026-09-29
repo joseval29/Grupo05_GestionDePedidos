@@ -1,0 +1,121 @@
+@model PedidoCreateViewModel
+@{
+    ViewData["Title"] = "Nuevo pedido";
+}
+
+<h1>Nuevo pedido</h1>
+<p class="text-muted">
+    Este formulario ejecuta el caso de uso completo: valida cliente y stock, calcula el total,
+    descuenta inventario y guarda el pedido — todo en una sola transacción del monolito.
+</p>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<form asp-action="Create" method="post" id="pedidoForm">
+    <div class="mb-3 col-md-6">
+        <label class="form-label">Cliente</label>
+        <select name="ClienteId" class="form-select" required>
+            <option value="">-- Seleccione un cliente --</option>
+            @foreach (var c in Model.ClientesDisponibles)
+            {
+                <option value="@c.Id">@c.Nombre (@c.Email)</option>
+            }
+        </select>
+    </div>
+
+    <h5 class="mt-4">Productos del pedido</h5>
+    <table class="table" id="lineasTable">
+        <thead>
+            <tr>
+                <th style="width: 50%">Producto</th>
+                <th style="width: 25%">Cantidad</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="linea-row">
+                <td>
+                    <select name="Lineas[0].ProductoId" class="form-select">
+                        <option value="">-- Producto --</option>
+                        @foreach (var p in Model.ProductosDisponibles)
+                        {
+                            <option value="@p.Id">@p.Nombre — @p.Precio.ToString("C") (stock: @p.Stock)</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <input type="number" name="Lineas[0].Cantidad" class="form-control" min="1" value="1" />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-outline-danger btn-sm btn-remove-linea">✕</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="button" id="btnAgregarLinea" class="btn btn-outline-primary btn-sm mb-4">+ Agregar producto</button>
+
+    <div>
+        <button type="submit" class="btn btn-success">Confirmar pedido</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // Genera dinámicamente nuevas filas de línea de pedido, respetando el índice
+        // que ASP.NET MVC necesita para el model binding de listas: Lineas[i].Campo
+        const productosOptions = `
+            <option value="">-- Producto --</option>
+            @foreach (var p in Model.ProductosDisponibles)
+            {
+                @:<option value="@p.Id">@p.Nombre — @p.Precio.ToString("C") (stock: @p.Stock)</option>
+            }
+        `;
+
+        let lineaIndex = 1;
+
+        document.getElementById('btnAgregarLinea').addEventListener('click', function () {
+            const tbody = document.querySelector('#lineasTable tbody');
+            const row = document.createElement('tr');
+            row.className = 'linea-row';
+            row.innerHTML = `
+                <td>
+                    <select name="Lineas[${lineaIndex}].ProductoId" class="form-select">
+                        ${productosOptions}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" name="Lineas[${lineaIndex}].Cantidad" class="form-control" min="1" value="1" />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-outline-danger btn-sm btn-remove-linea">✕</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+            lineaIndex++;
+        });
+
+        document.querySelector('#lineasTable').addEventListener('click', function (e) {
+            if (e.target.classList.contains('btn-remove-linea')) {
+                const rows = document.querySelectorAll('.linea-row');
+                if (rows.length > 1) {
+                    e.target.closest('tr').remove();
+                    renumerarLineas();
+                }
+            }
+        });
+
+        // Tras borrar una fila, los índices deben quedar consecutivos (0..n-1);
+        // si hay huecos, el model binding se detiene y descarta las líneas siguientes.
+        function renumerarLineas() {
+            const rows = document.querySelectorAll('#lineasTable .linea-row');
+            rows.forEach(function (row, i) {
+                row.querySelectorAll('[name^="Lineas["]').forEach(function (el) {
+                    el.name = el.name.replace(/^Lineas\[\d+\]/, `Lineas[${i}]`);
+                });
+            });
+            lineaIndex = rows.length;
+        }
+    </script>
+}

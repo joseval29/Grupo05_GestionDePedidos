@@ -1,0 +1,23 @@
+@model Cliente
+@{
+    ViewData["Title"] = "Detalle del cliente";
+}
+
+<h1>Detalle del cliente</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Nombre</dt>
+    <dd class="col-sm-9">@Model.Nombre</dd>
+
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+
+    <dt class="col-sm-3">Teléfono</dt>
+    <dd class="col-sm-9">@(Model.Telefono ?? "-")</dd>
+
+    <dt class="col-sm-3">Fecha de registro</dt>
+    <dd class="col-sm-9">@Model.FechaRegistro.ToString("dd/MM/yyyy")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+<a asp-action="Index" class="btn btn-outline-secondary">Volver a la lista</a>
